@@ -12,17 +12,17 @@ type Employee struct {
 	gorm.Model
 	Name       string `valid:"required~Name not null"` // ต้องไม่เป็นค่าว่าง
 	Email      string //`valid:"email~Email not True in formatches"`
-	EmployeeID string //`valid:"matches(^[J,M,S]\\{8}$)~ EM_id not True in formatches"` // รหัสพนักงานขึ7นต้นด้วย J หรือ M หรือ S แล้วตามด้วยตัวเลขจํานวน 8 ตัว
+	EmployeeID string `valid:"matches(^[M|J|S]\\d{8}$)~EM_id not True in formatches"` // รหัสพนักงานขึ7นต้นด้วย J หรือ M หรือ S แล้วตามด้วยตัวเลขจํานวน 8 ตัว
 }
 
-func TestEm(t *testing.T) {
+func TestEmpositive(t *testing.T) {
 	g := gomega.NewGomegaWithT(t)
 
 	t.Run("case 1", func(t *testing.T) {
 		em := Employee{
 			Name:       "Mew",
 			Email:      "Mew@gmail.com",
-			EmployeeID: "M123456789",
+			EmployeeID: "J12345678",
 		}
 
 		ok, err := govalidator.ValidateStruct(em)
@@ -32,18 +32,5 @@ func TestEm(t *testing.T) {
 
 	})
 
-	t.Run("case 2 name not null", func(t *testing.T) {
-		em := Employee{
-			Name:       "", //ผิด
-			Email:      "Mew@gmail.com",
-			EmployeeID: "M123456789",
-		}
-
-		ok, err := govalidator.ValidateStruct(em)
-		g.Expect(ok).NotTo(gomega.BeTrue())
-		g.Expect(err).ToNot(gomega.BeNil())
-		g.Expect(err.Error()).To(gomega.Equal("Name not null"))
-
-	})
 
 }
